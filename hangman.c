@@ -3,8 +3,6 @@
 #include <string.h>
 #include <time.h>
 
-int length(char array[]);
-
 int main() {
 
     // Generate a seed for the random number generator
@@ -39,7 +37,7 @@ int main() {
 
     // Information about the current game
     int limbs = 5;              // The amount of limbs (lives) remaining
-    int score = 0;              // The user's current score
+    int score = 0;              // The player's current score
     int before = 0;             // What the score was before the current guess
 
     // Generate a random index used to select a word
@@ -58,6 +56,7 @@ int main() {
     char available[26];
     strcpy(available, alphabet);
 
+    // Let the player know the game has begun
     printf("\n~~~~~HANGMAN~~~~~\n");
     printf("The word has %d letters: ", total);
     for ( int i = 0 ; i < total ; i++ ) {
@@ -70,13 +69,14 @@ int main() {
 
         printf("\n");
 
-        // Have the user guess a letter
+        // Have the player guess a letter
         printf("Guess a letter: ");
         scanf("%c", &guess);
-        getchar();
+        // Only take the first letter as a guess
+        while ( getchar() != '\n' ) { ; }
 
-        // If the user pressed the <enter> key twice, quit the game
-        if ( guess == '\n' ) {
+        // If the player pressed the <enter> key twice, quit the game
+        if ( guess == '\n' || guess == '0' ) {
             terminate = 1;
             break;
         }
@@ -104,16 +104,16 @@ int main() {
                 }
             }
         }
-        // Do nothing if the user reguesses a letter
+        // Do nothing if the player reguesses a letter
         if ( new_guess == 0 ) {
-            printf("%c has been guessed already.\n", guess);
+            printf("Try again - <%c> has been guessed already.\n", guess);
             continue;
         }
-        // Tell the user if they were correct, and how many limbs they have left
+        // Tell the player if they were correct, and how many limbs they have left
         if ( incorrect_guess == 1 ) {
-            printf("Correct - great guess!\n");
+            printf("Correct - <%c> was a great guess!\n", guess);
         } else if ( incorrect_guess == 2 ) {
-            printf("Sorry, that guess was incorrect.\n");
+            printf("Sorry, your guess of <%c> was incorrect.\n", guess);
             limbs--;
             printf("You have %d limbs remaining.\n", limbs);
             // Break from the while loop if the player has no more limbs
@@ -143,9 +143,10 @@ int main() {
     if ( terminate == 0 ) {
         printf("Congratulations, you win!\n");
     } else if ( terminate == 1 ) {
-        printf("The user has exited the program.\n");
+        printf("The player has exited the program.\n");
     } else if ( terminate == 2 ) {
         printf("Sorry, you have run out of limbs.\n");
+        printf("The word was <%s>.\n", word);
     }
 
 }
