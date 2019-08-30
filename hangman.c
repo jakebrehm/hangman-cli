@@ -21,47 +21,45 @@ int main() {
     // Determine the number of possible words
     int numberOfWords = sizeof(words) / sizeof(words[0]);
 
-    // Initialize the terminate variable
-    int terminate = 0;
-
     // Define list containing all valid guesses (the alphabet)
-    char alphabet[26] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
+    char alphabet[27] = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
                          'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
                          'w', 'x', 'y', 'z'};
 
-
     while ( 1 ) {
+
+        // Initialize the terminate variable
+        int terminate = 0;
 
         // Initialize the player's current guess
         char guess;
 
         // Information about the current game
-        int limbs = 5;              // The amount of limbs (lives) remaining
-        int score = 0;              // The player's current score
-        int before = 0;             // What the score was before the current guess
+        int limbs = 5;          // The amount of limbs (lives) remaining
+        int score = 0;          // The player's current score
+        int before = 0;         // What the score was before the current guess
 
         // Generate a random index used to select a word
         int r = rand() % numberOfWords;
         // Store the randomly selected word in its own variable
         char word[16];
+        memset(word, 0, sizeof(word));
         strcpy(word, words[r]);
         // Get the length of the word
         int total = strlen(word);
-
-        printf("The random number is: %d\n", r);
-        printf("The word is: %s\n", word);
-        printf("Its length is: %d\n", total);
 
         // Make an array of zeros of the same length as the word
         int body[total];
         memset(body, 0, sizeof(body));
 
         // Copy the alphabet list for use in the current game
-        char available[26];
-        strcpy(available, alphabet);
+        int available[27];
+        memset(available, 0, sizeof(available));
+        int availableLength = sizeof(available) / sizeof(available[0]);
 
         // Let the player know the game has begun
-        printf("\n~~~~~HANGMAN~~~~~\n");
+        system("cls");
+        printf("~~~~~HANGMAN~~~~~\n");
         printf("The word has %d letters: ", total);
         for ( int i = 0 ; i < total ; i++ ) {
             printf("-");
@@ -90,13 +88,13 @@ int main() {
              * letter has not been guessed before but is in the target
              * word, increment the player's score accordingly.
              ************************************************************/
-            // New guess: 0 -> already guessed, 1 -> new guess
+            // New guess -> 0: already guessed, 1: new guess
             int new_guess = 0;
-            // Incorrect guess: 0 -> already guessed, 1 -> correct, 2 -> incorrect
+            // Incorrect guess -> 0: already guessed, 1: correct, 2: incorrect
             int incorrect_guess = 0;
-            for ( int i = 0 ; i < 26 ; i++ ) {
-                if ( guess == available[i] && available[i] != 0 ) {
-                    available[i] = 0;
+            for ( int i = 0 ; i < availableLength - 1 ; i++ ) {
+                if ( guess == alphabet[i] && available[i] == 0 ) {
+                    available[i] = 1;
                     new_guess = 1;
                     incorrect_guess = 2;
                     for ( int j = 0 ; j < total ; j++ ) {
@@ -113,7 +111,7 @@ int main() {
                 printf("Try again - <%c> has been guessed already.\n", guess);
                 continue;
             }
-            // Tell the player if they were correct, and how many limbs they have left
+            // Tell the player if they were correct, and their remaining limbs
             if ( incorrect_guess == 1 ) {
                 printf("Correct - <%c> was a great guess!\n", guess);
             } else if ( incorrect_guess == 2 ) {
@@ -147,7 +145,6 @@ int main() {
         if ( terminate == 0 ) {
             printf("Congratulations, you win!\n");
         } else if ( terminate == 1 ) {
-            // printf("The player has exited the program.\n");
             break;
         } else if ( terminate == 2 ) {
             printf("Sorry, you have run out of limbs.\n");
@@ -168,16 +165,19 @@ int main() {
 
     }
 
-    printf("\n");
-    printf("The player has exited the program.\n");
+    // Thank the user for playing
+    printf("Thanks for playing!\n");
 
 }
 
+/* Ask the player if they want to play again, and return their choice. */
 char play_again() {
     char choice;
-    printf("\n");
-    printf("Would you like to play again? (y/n): ");
+    // Ask the player to input either 'y' or 'n' and scan for their input
+    printf("\nWould you like to play again? (y/n): ");
     scanf("%c", &choice);
+    // Toss out any remaining characters from the input
     while ( getchar() != '\n' ) { ; }
+    // Return the character
     return choice;
 }
